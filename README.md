@@ -7,6 +7,9 @@ Can be useless to coding but, we can study the languages and logic in most organ
 > [!WARNING]
 > This code occupes a lot of storage because we prefer copy the file instead moving
 
+> [!CAUTION]
+> This code want work with some BSD OS code to work and needs the flag `-dir {BSD OS dir}` to work properly
+
 ## License
 
 This code is written under license [MIT](https://github.com/FoxBSD/Convert-K2K/blob/main/LICENSE)
@@ -31,5 +34,3 @@ or run interactively
 go run cmd/ck2k/main.go
 ```
 
-> [!CAUTION]
-> This code want work with some BSD OS code to work and needs the flag `-dir {BSD OS dir}` to work properly
