@@ -5,9 +5,12 @@ import (
 	"convert-k2k/internal/debug"
 	"convert-k2k/internal/structures"
 	"database/sql"
+	"errors"
 	"io/fs"
 	"path/filepath"
 )
+
+var errGitDirFounded error = errors.New("this is a .git directory")
 
 // This private function get the kernel directory and return a list of file metadata
 func walk(dir string) ([]structures.FileData, error) {
@@ -16,6 +19,10 @@ func walk(dir string) ([]structures.FileData, error) {
 	err := filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
+		}
+
+		if info.IsDir() && info.Name() == ".git" {
+			return filepath.SkipDir
 		}
 
 		if !info.IsDir() {
@@ -40,8 +47,8 @@ func walk(dir string) ([]structures.FileData, error) {
 }
 
 // This function load the directory and the database to insert a file
-func WalkAndInsert(dir string, database *sql.DB) {
-	kdir := LoadKernel(dir)
+func WalkAndInsert(dir string, isBSD bool, database *sql.DB) {
+	kdir := LoadKernel(dir, isBSD)
 
 	files, _ := walk(kdir)
 
