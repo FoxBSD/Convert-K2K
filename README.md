@@ -1,6 +1,6 @@
 # Convert-K2K
 
-This is a small aplication to convert a `BSD Like Kernel` in a mount of files sorted by extension. 
+This is a small aplication to convert a `Kernel BSD Like` in a mount of files sorted by extension. 
 
 Can be useless to coding but, we can study the languages and logic in most organized enviroment.
 
