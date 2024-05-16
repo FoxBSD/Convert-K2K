@@ -4,6 +4,7 @@ import (
 	"convert-k2k/internal/debug"
 	"convert-k2k/internal/structures"
 	"database/sql"
+	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -25,8 +26,9 @@ func populateTable(db *sql.DB) {
 }
 
 // This function creates and popule a instance of sqlite3
-func CreateDB() *sql.DB {
-	db, err := sql.Open("sqlite3", "repos.db")
+func CreateDB(N string) *sql.DB {
+	dbName := fmt.Sprintf("repos_%s.db", N)
+	db, err := sql.Open("sqlite3", dbName)
 	if err != nil {
 		debug.PrintErrorMessage("Open database", err)
 		return nil
