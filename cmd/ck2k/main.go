@@ -13,7 +13,10 @@ import (
 
 var database *sql.DB
 
+// NOTE: Put tests in it's own package.
+
 func main() {
+	// TODO: Separate this logic into a parser package, with tests included.
 	dir := flag.String("dir", "", "this flag is used to pass the BSD OS dir")
 	notIsBSD := flag.Bool("nbsd", true, "this flag is used to verify if is a bsd project")
 	flag.Parse()
@@ -24,6 +27,8 @@ func main() {
 
 		walker.WalkAndInsert(*dir, *notIsBSD, database)
 
+		// NOTE: Since the file information was already in memory, the previous
+		// function could just return that information to the next steps.
 		repos := db.GetRepos(database)
 
 		for _, repo := range repos {
