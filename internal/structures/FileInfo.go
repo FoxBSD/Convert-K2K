@@ -1,5 +1,7 @@
 package structures
 
+// TODO: Add a constructor for this struct.
+
 type FileData struct {
 	FileName  string
 	FilePath  string

@@ -21,13 +21,18 @@ func walk(dir string) ([]structures.FileData, error) {
 			return err
 		}
 
+		// TODO: Add this code snippet to interact with a -ignore flag.
 		if info.IsDir() && info.Name() == ".git" {
 			return filepath.SkipDir
 		}
 
+		// TODO: Invert the condition to improve readability.
 		if !info.IsDir() {
 			ext := filepath.Ext(path)
 
+			// TODO: Add a verification for empty extension files to improve debug time.
+
+			// NOTE: Check the structures.FileData definition file...
 			files = append(files, structures.FileData{
 				FileName:  info.Name(),
 				FilePath:  path,
