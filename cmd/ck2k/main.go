@@ -9,35 +9,65 @@ import (
 	"database/sql"
 	"errors"
 	"flag"
+	"os"
 )
-
-var database *sql.DB
 
 // NOTE: Put tests in it's own package.
 
+var database *sql.DB
+
 func main() {
-	// TODO: Separate this logic into a parser package, with tests included.
-	dir := flag.String("dir", "", "this flag is used to pass the BSD OS dir")
-	notIsBSD := flag.Bool("nbsd", true, "this flag is used to verify if is a bsd project")
-	flag.Parse()
+	argv, err := parser(flag.CommandLine)
+	if err != nil {
+		debug.PrintErrorMessage(argv.sourceDir, err)
 
-	if *dir != "" {
-		file := files.GetFileName(*dir)
-		database = db.CreateDB(file)
-
-		walker.WalkAndInsert(*dir, *notIsBSD, database)
-
-		// NOTE: Since the file information was already in memory, the previous
-		// function could just return that information to the next steps.
-		repos := db.GetRepos(database)
-
-		for _, repo := range repos {
-			reconstruction.CreateNewPath(repo, file)
-		}
-
-		defer database.Close()
-		return
+		os.Exit(1)
 	}
 
-	debug.PrintErrorMessage(*dir, errors.New("we need the flag -dir with BSD OS path to convert"))
+	file := files.GetFileName(argv.sourceDir)
+	database = db.CreateDB(file)
+
+	defer database.Close()
+
+	walker.WalkAndInsert(argv.sourceDir, argv.isNotBSD, database)
+
+	// NOTE: Since the file information was already in memory, the previous
+	// function could just return that information to the next steps.
+	repos := db.GetRepos(database)
+
+	for _, repo := range repos {
+		reconstruction.CreateNewPath(repo, file)
+	}
+}
+
+// Used in the `parser()` function (on the main package) as a return type,
+// mainly to store the user CLI arguments in a easy access way.
+type args struct {
+	sourceDir string
+	isNotBSD  bool
+}
+
+// Parse the user arguments given a `flag.FlagSet`, normally `flag.CommandLine`
+// to have access to the shell's command line arguments. That's because it
+// becames easier to test without the need to execute system commands, only
+// updating the OS'es flags in a custom `flag.FlagSet` for unit testing.
+func parser(fs *flag.FlagSet) (args, error) {
+	argv := args{}
+
+	fs.StringVar(&argv.sourceDir, "dir", "", "this flag is used to pass the BSD OS dir")
+	fs.BoolVar(&argv.isNotBSD, "nbsd", true, "this flag is used to verify if is a bsd project")
+
+	fs.Parse(os.Args[1:])
+
+	return argv, validateArgumentValues(argv)
+}
+
+// Function helper fro the `parser(*flag.FlagSet)`, used to check the flag
+// custom/default values and return an error in case something is wrong.
+func validateArgumentValues(argv args) error {
+	if argv.sourceDir == "" {
+		return errors.New("we need the flag -dir with BSD OS path to convert")
+	}
+
+	return nil
 }
