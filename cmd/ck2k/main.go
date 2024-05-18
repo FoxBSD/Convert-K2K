@@ -12,8 +12,6 @@ import (
 	"os"
 )
 
-// NOTE: Put tests in it's own package.
-
 var database *sql.DB
 
 func main() {
